@@ -92,7 +92,6 @@ class CaptureFolder:
     def __init__(self, root: str):
         self.root = root
         self.id = os.path.basename(os.path.normpath(root))
-        logger.warning("Camera poses have not been optimized, the ARKit poses will be used as a fallback")
         if not self.has_optimized_poses():
             logger.warning("Camera poses have not been optimized, the ARKit poses will be used as a fallback")
 
