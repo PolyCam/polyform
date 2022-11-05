@@ -1,7 +1,15 @@
+'''
+File: bbox.py
+Polycam Inc.
+
+Created by Chris Heinrich on Saturday, 5th November 2022
+Copyright © 2022 Polycam Inc. All rights reserved.
+'''
+
+
 
 import numpy as np
 from typing import List
-
 
 class BBox3D:
     def __init__(self, bbox_min: np.array, bbox_max: np.array):

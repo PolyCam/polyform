@@ -1,3 +1,10 @@
+'''
+File: logging.py
+Polycam Inc.
+
+Created by Chris Heinrich on Tuesday, 1st November 2022
+Copyright © 2022 Polycam Inc. All rights reserved.
+'''
 import os
 import logging
 
