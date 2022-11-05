@@ -7,6 +7,8 @@ working with a raw Polycam dataset.
 
 import os
 import json
+import numpy as np
+from polyform.core.bbox import BBox3D, bbox_from_points
 from polyform.utils.logging import logger
 from enum import Enum
 from typing import List
@@ -38,7 +40,8 @@ class Camera:
                 [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
                 [j["t_10"], j["t_11"], j["t_12"], j["t_13"]],
                 [j["t_20"], j["t_21"], j["t_22"], j["t_23"]],
-                [0,0,0,1]]
+                [0.0,0.0,0.0,1.0]]
+        self.transform = np.asarray(self.transform_rows, dtype=np.float32)
 
 class Keyframe:
     """
@@ -155,5 +158,15 @@ class CaptureFolder:
     def load_json_artifact(self, folder_artifact: CaptureArtifact) -> dict:
         path = self.get_artifact_path(folder_artifact)
         return CaptureFolder.load_json(path)
+
+    @staticmethod
+    def camera_bbox(keyframes: List[Keyframe]) -> BBox3D:
+        """
+        Returns the bounding box that contains all the cameras
+        """
+        positions = []
+        for keyframe in keyframes:
+            positions.append(keyframe.camera.transform[0:3,3])
+        return bbox_from_points(points=positions)
 
 

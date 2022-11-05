@@ -41,7 +41,12 @@ class InstantNGPConvertor(ConvertorInterface):
         - estimate the real aabb_scale
         - add the camera angle formulation (if required)
         """
-        data["aabb_scale"] = 16 # constant value until we estimate this from the data
+        data["aabb_scale"] = 4 # constant value until we estimate this from the data
+
+        bbox = CaptureFolder.camera_bbox(keyframes)
+        ## TODO use camera bbox to compute scale, and offset 
+        ## See https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md#scaling-existing-datasets
+        print(bbox)
 
         ## add the frames
         frames = []

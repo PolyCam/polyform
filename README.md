@@ -23,7 +23,7 @@ Open the settings screen in the Polycam iOS app, scroll down to 'Developer mode'
 Python 3.7+ is recommended.
 
 ```
-pip3 install fire # install dependencies
+pip3 install numpy fire # install dependencies
 git clone https://github.com/PolyCam/polyform
 ```
 
