@@ -1,3 +1,10 @@
+'''
+File: convert.py
+Polycam Inc.
+
+Created by Chris Heinrich on Tuesday, 1st November 2022
+Copyright © 2022 Polycam Inc. All rights reserved.
+'''
 import fire
 from polyform.utils.logging import logger
 from polyform.core.capture_folder import CaptureFolder

@@ -1,3 +1,12 @@
+'''
+File: capture_folder.py
+Polycam Inc.
+
+Created by Chris Heinrich on Tuesday, 1st November 2022
+Copyright © 2022 Polycam Inc. All rights reserved.
+'''
+
+
 """
 The CaptureFolder and associated types are the main wrappers around Polycam data as it is laid out on the filesystem. 
 
