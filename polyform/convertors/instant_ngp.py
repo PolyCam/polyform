@@ -1,5 +1,13 @@
+'''
+File: instant_ngp.py
+Polycam Inc.
+
+Created by Chris Heinrich on Tuesday, 1st November 2022
+Copyright © 2022 Polycam Inc. All rights reserved.
+'''
 import os
 import json
+import numpy as np
 from polyform.utils.logging import logger
 from polyform.core.capture_folder import *
 from polyform.convertors.convertor_interface import ConvertorInterface
@@ -47,6 +55,14 @@ class InstantNGPConvertor(ConvertorInterface):
         ## TODO use camera bbox to compute scale, and offset 
         ## See https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md#scaling-existing-datasets
         print(bbox)
+        # Compute scale and offset using the bounding box
+        # Note that from Instant NGP's nerf_loader.cu we can see they apply offset after scaling, so we pre-scale the offset
+
+        max_size = np.max(bbox.size())
+        if max_size > 1:
+            data["scale"] = float(1.0 / max_size) # this scale will 
+            offset = bbox.center() / max_size
+            data["offset"] = [float(offset[0]), float(offset[1]), float(offset[2])]
 
         ## add the frames
         frames = []
