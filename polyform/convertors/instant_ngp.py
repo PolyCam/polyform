@@ -49,20 +49,20 @@ class InstantNGPConvertor(ConvertorInterface):
         - estimate the real aabb_scale
         - add the camera angle formulation (if required)
         """
-        data["aabb_scale"] = 4 # constant value until we estimate this from the data
+
 
         bbox = CaptureFolder.camera_bbox(keyframes)
-        ## TODO use camera bbox to compute scale, and offset 
-        ## See https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md#scaling-existing-datasets
         print(bbox)
-        # Compute scale and offset using the bounding box
-        # Note that from Instant NGP's nerf_loader.cu we can see they apply offset after scaling, so we pre-scale the offset
+        ## Use camera bbox to compute scale, and offset 
+        ## See https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md#scaling-existing-datasets
 
-        max_size = np.max(bbox.size())
-        if max_size > 1:
-            data["scale"] = float(1.0 / max_size) # this scale will 
-            offset = bbox.center() / max_size
-            data["offset"] = [float(offset[0]), float(offset[1]), float(offset[2])]
+        max_size = np.max(bbox.size()) * 0.6
+        data["scale"] = float(1.0 / max_size) # this scale will 
+        offset = -bbox.center() / max_size
+        data["offset"] = [float(offset[0]) + 0.5, float(offset[1]) + 0.5, float(offset[2]) + 0.5]
+
+        data["aabb_scale"] = 2
+
 
         ## add the frames
         frames = []
