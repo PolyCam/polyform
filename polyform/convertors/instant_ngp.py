@@ -32,9 +32,10 @@ class InstantNGPConvertor(ConvertorInterface):
         """
         NOTE
         We use the intrinsics from the first camera to populate the camera data in the transforms.json file.
-        However the intrinsics do vary slightly (a pixel or two) frame-to-frame, but instant-ngp does not support
-        having different intrinsics for each frame. If you are working with a NeRF implementation that does then
+        However the intrinsics do vary slightly (a pixel or two) frame-to-frame. If you are working with a NeRF implementation that does then
         it would be better to use the frame-dependent intrinsics.
+        TODO
+        Add another convertor that writes out multiple json files, with one camera per frame. Instant-NGP seems to support this, but nerfstudio may not.
         """
         cam = keyframes[0].camera
         data["fl_x"] = cam.fx
@@ -44,25 +45,15 @@ class InstantNGPConvertor(ConvertorInterface):
         data["w"] = cam.width
         data["h"] = cam.height
 
-        """
-        TODO
-        - estimate the real aabb_scale
-        - add the camera angle formulation (if required)
-        """
-
-
         bbox = CaptureFolder.camera_bbox(keyframes)
         print(bbox)
         ## Use camera bbox to compute scale, and offset 
         ## See https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md#scaling-existing-datasets
-
         max_size = np.max(bbox.size()) * 0.6
         data["scale"] = float(1.0 / max_size) # this scale will 
         offset = -bbox.center() / max_size
         data["offset"] = [float(offset[0]) + 0.5, float(offset[1]) + 0.5, float(offset[2]) + 0.5]
-
         data["aabb_scale"] = 2
-
 
         ## add the frames
         frames = []

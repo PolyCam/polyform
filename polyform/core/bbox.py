@@ -6,8 +6,6 @@ Created by Chris Heinrich on Saturday, 5th November 2022
 Copyright © 2022 Polycam Inc. All rights reserved.
 '''
 
-
-
 import numpy as np
 from typing import List
 
@@ -52,7 +50,6 @@ def bbox_from_points(points: List[np.array]) -> BBox3D:
             bbox_min[1] = point[1]
         if point[1] > bbox_max[1]:
             bbox_max[1] = point[1]
-
          #z
         if point[2] < bbox_min[2]:
             bbox_min[2] = point[2]

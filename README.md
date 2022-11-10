@@ -108,3 +108,6 @@ The depth data is stored in lossless .png format as a single channel image where
 This folder includes the pixel-wise confidence maps associated with the depth maps (see [docs](https://developer.apple.com/documentation/arkit/ardepthdata/3566295-confidencemap)). ARKit only provides three confidence values -- low, medium and high. We encode these as a single-channel 8-bit integer map, where 0 = low, 127 = medium, and 255 = high. The low confidence values are quite unreliable, and for most applications it would be best to filter them out.
 
 
+## Tips on dataset collection
+
+ To get the best datasets, for training NeRFS or just in general, it's important to (i) get great coverage of your subject and (ii) reduce blur as much as possible. To reduce blur it's important to have good lighting and move the camera slowly if using auto mode, but to get the clearest images, particularly for lower light conditions such as indoors, it's recommended to use the manual shutter mode to collect still images -- you will just need to be sure to collect a lot of them.
