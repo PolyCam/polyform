@@ -37,7 +37,11 @@ class CaptureArtifact(Enum):
 
 class Camera:
     def __init__(self, j: dict, z_up: bool = False):
-        """ Initializes a Camera object from the Polycam camera json format """
+        """ Initializes a Camera object from the Polycam camera json format 
+        Args:
+            j: json representation of a camera object
+            z_up: will flip data so that z_axis points up instead of y_axis
+        """
         self.fx = j["fx"]
         self.fy = j["fy"]
         self.cx = j["cx"]
@@ -47,15 +51,10 @@ class Camera:
         self.blur_score = j["blur_score"]
         if z_up:
             self.transform_rows = [
-                [j["t_00"], j["t_02"], -j["t_01"], j["t_03"]],
-                [j["t_10"], j["t_12"], -j["t_11"], j["t_13"]],
-                [j["t_20"], j["t_22"], -j["t_21"], j["t_23"]],
+                [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
+                [j["t_20"], j["t_21"], j["t_22"], j["t_23"]],
+                [-j["t_10"], -j["t_11"], -j["t_12"], -j["t_13"]],
                 [0.0,0.0,0.0,1.0]]
-            #self.transform_rows = [
-            #    [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
-            #    [j["t_20"], j["t_21"], j["t_22"], j["t_23"]],
-            #    [-j["t_10"], -j["t_11"], -j["t_12"], -j["t_13"]],
-            #    [0.0,0.0,0.0,1.0]]
         else:
             self.transform_rows = [
                     [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
