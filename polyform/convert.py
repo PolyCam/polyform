@@ -9,6 +9,7 @@ import fire
 from polyform.utils.logging import logger
 from polyform.core.capture_folder import CaptureFolder
 from polyform.convertors.instant_ngp import InstantNGPConvertor
+from polyform.convertors.instant_ngp_multifile import InstantNGPMultiFileConvertor
 
 
 def convert(data_folder_path: str, format: str = "ingp"):
@@ -19,8 +20,10 @@ def convert(data_folder_path: str, format: str = "ingp"):
         format: Output format time. Supported values are [ingp]
     """
     folder = CaptureFolder(data_folder_path)
-    if format.lower() == "ingp" or format.lower() == "instant-ngp":
+    if format.lower() == "ingp":
         convertor = InstantNGPConvertor()
+    elif format.lower() == "ingp-multifile":
+        convertor = InstantNGPMultiFileConvertor()
     else:
         logger.error("Format {} is not curently supported. Consider adding a convertor for it".format(format))
         exit(1)

@@ -10,7 +10,7 @@ import numpy as np
 from typing import List
 
 class BBox3D:
-    def __init__(self, bbox_min: np.array, bbox_max: np.array):
+    def __init__(self, bbox_min: np.ndarray, bbox_max: np.ndarray):
         """
         Initializes a 3D axis-aligned bbox from the min and max points
         
@@ -22,17 +22,17 @@ class BBox3D:
         self.min = bbox_min
         self.max = bbox_max
     
-    def center(self) -> np.array:
+    def center(self) -> np.ndarray:
         return (self.min + self.max) / 2.0
     
-    def size(self) -> np.array:
+    def size(self) -> np.ndarray:
         return (self.max - self.min)
 
     def __str__(self):
         return "\n *** BBox3D *** \nmin: {}\nmax: {}\nsize: {}\ncenter: {}\n".format(self.min, self.max, self.size(), self.center())
 
 
-def bbox_from_points(points: List[np.array]) -> BBox3D:
+def bbox_from_points(points: List[np.ndarray]) -> BBox3D:
     """
     Generates a bounding box from a list of points (i.e. 3D numpy arrays)
     """
