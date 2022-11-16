@@ -36,7 +36,7 @@ class CaptureArtifact(Enum):
 
 
 class Camera:
-    def __init__(self, j: dict, rotate: bool = True):
+    def __init__(self, j: dict, rotate: bool = False):
         """ Initializes a Camera object from the Polycam camera json format 
         Args:
             j: json representation of a camera object
@@ -68,7 +68,7 @@ class Keyframe:
     A Keyframe includes the camera information (extrinsics and intrinsics) as well as the 
     path to the associated data on disk (images, depth map, confidence)
     """
-    def __init__(self, folder: str, timestamp: int):
+    def __init__(self, folder: str, timestamp: int, rotate: bool):
         self.folder = folder
         self.timestamp = timestamp
         self.image_path = os.path.join(
@@ -81,7 +81,7 @@ class Keyframe:
             folder, "{}/{}.json".format(CaptureArtifact.CORRECTED_CAMERAS.value, timestamp))
         self.depth_path = os.path.join(
             folder, "{}/{}.png".format(CaptureArtifact.DEPTH_MAPS.value, timestamp))
-        self.camera = Camera(self.get_best_camera_json())
+        self.camera = Camera(self.get_best_camera_json(), rotate)
 
     def is_valid(self) -> bool:
         if not os.path.isfile(self.camera_path):
@@ -105,8 +105,7 @@ class Keyframe:
             return CaptureFolder.load_json(self.corrected_camera_path)
         else:
             return CaptureFolder.load_json(self.camera_path)
-
-
+            
     def __str__(self):
         return "keyframe:{}".format(self.timestamp)
 
@@ -154,13 +153,13 @@ class CaptureFolder:
             return timestamps
         return [int(path.replace(".json", "")) for path in sorted(os.listdir(folder_path)) if path.endswith("json")]
 
-    def get_keyframes(self) -> List[Keyframe]:
+    def get_keyframes(self, rotate: bool = False) -> List[Keyframe]:
         """
         Returns all valid keyframes associated with this dataset
         """
         keyframes = []
         for ts in self.get_keyframe_timestamps():
-            keyframe = Keyframe(self.root, ts)
+            keyframe = Keyframe(self.root, ts, rotate)
             if keyframe.is_valid():
                 keyframes.append(keyframe)
         return keyframes

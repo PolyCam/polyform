@@ -4,7 +4,7 @@ Polycam is an application for 3D scanning that can be downloaded for free on the
 
 This project, polyform, includes tools for converting from Polycam's raw data format into other data formats, such as those used to train NeRFs. As discussed in more detail below, the camera poses are globally optimized and do not require any further optimization (i.e. COLMAP is not required) to be used as input to a NeRF.
 
-We hope that by exposing a free raw data export option, as well as documentation and tools for workign with this data, we can help to enable researchers working in the field of 3D computer vision, as well as creative technologists working on the forefront of 3D creation. If you make something cool and post it online please tag us @polycam3d.
+We hope that by exposing a free raw data export option, as well as documentation and tools for working with this data, we can help to enable researchers working in the field of 3D computer vision, as well as creative technologists working on the forefront of 3D creation. If you make something cool and post it online please tag us @polycam3d.
 
 ## Requirements & preliminary remarks
 
@@ -23,7 +23,7 @@ Open the settings screen in the Polycam iOS app, scroll down to 'Developer mode'
 Python 3.7+ is recommended.
 
 ```
-pip3 install numpy fire # install dependencies
+pip3 install numpy fire Pillow # install dependencies
 git clone https://github.com/PolyCam/polyform
 ```
 
@@ -35,14 +35,22 @@ Given that the pose optimization can take some time to run on very lage scenes, 
 
 ## Converting from Polycam's data format to other formats
 
-To convert from Polycam's data format run the following command from the root of the `polyform` repo:
+
+### Nerfstudio
+
+[Nerfstudio](https://github.com/nerfstudio-project/nerfstudio) offers a suite of tools for training, visualizing and working with NeRFS. They offer a tool to directly import Polycam's data format, and we recommend using their importer if you wish to use nerfstudio. See [their docs](https://docs.nerf.studio/en/latest/quickstart/custom_dataset.html#polycam-capture) for more info.
+
+### Instant-ngp
+
+[Instant-NGP](https://github.com/NVlabs/instant-ngp) is a popular open source project for training and visualizing NeRFs. You can convert from Polycam's data format to the the instant-ngp format by running the following command from the root of the `polyform` repo:
+
 ```
-python3 -m polyform.convert <path-to-data-folder> --format <format-name>
+python3 -m polyform.convert <path-to-data-folder> --format ingp
 ```
 
-Currently the only supported data format is the Instant-NGP (ingp). This can be used to train NeRFs using [instant-ngp](https://github.com/NVlabs/instant-ngp) or [nerfstudio](https://github.com/nerfstudio-project/nerfstudio).
+### Adding additional convertors:
 
-If you would like to add an additional export format you can do so by consulting the data specification below, and using `polyform/convertors/instant_ngp.py` as an example.
+If you would like to add an additional export format you can do so by consulting Polycam's data specification below, and using `polyform/convertors/instant_ngp.py` as an example.
 
 ## Polycam's data format
 
@@ -111,3 +119,7 @@ This folder includes the pixel-wise confidence maps associated with the depth ma
 ## Tips on dataset collection
 
  To get the best datasets, for training NeRFS or just in general, it's important to (i) get great coverage of your subject and (ii) reduce blur as much as possible. To reduce blur it's important to have good lighting and move the camera slowly if using auto mode, but to get the clearest images, particularly for lower light conditions such as indoors, it's recommended to use the manual shutter mode to collect still images -- you will just need to be sure to collect a lot of them.
+
+ ## Working at Polycam
+
+ If you are an engineer or researcher working in the field of 3D computer vision and want to work on a product that's shipping 3D reconstruction to millions of users, email us at careers@polycam.ai.

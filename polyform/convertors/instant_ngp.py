@@ -15,6 +15,9 @@ from polyform.convertors.convertor_interface import ConvertorInterface
 
 class InstantNGPConvertor(ConvertorInterface):
     """Converts Polycam data to the format expected by Instant-NGP"""
+    def __init__(self, corrected_image_padding: int = 5):
+        self.corrected_image_padding = corrected_image_padding
+
     def convert(self, folder: CaptureFolder, output_path: str = ""):
         """
         Converts a Polycam CaptureFolder into an instant-ngp dataset by writing out the
@@ -26,7 +29,7 @@ class InstantNGPConvertor(ConvertorInterface):
                 written at the root of the CaptureFolder's data directory.
         """
         data = {}
-        keyframes = folder.get_keyframes()
+        keyframes = folder.get_keyframes(rotate=True)
         if len(keyframes) == 0:
             logger.error("Capture folder does not have any data! Aborting conversion to Instant NGP")
             return
@@ -41,10 +44,17 @@ class InstantNGPConvertor(ConvertorInterface):
         cam = keyframes[0].camera
         data["fl_x"] = cam.fx
         data["fl_y"] = cam.fy
-        data["cx"] = cam.cx
-        data["cy"] = cam.cy
-        data["w"] = cam.width
-        data["h"] = cam.height
+        if folder.has_optimized_poses():
+            # For optimized data we apply a crop of the image data, and we need to update the intrinsics here to match
+            data["cx"] = cam.cx - self.corrected_image_padding
+            data["cy"] = cam.cy - self.corrected_image_padding
+            data["w"] = cam.width - 2 * self.corrected_image_padding
+            data["h"] = cam.height - 2 * self.corrected_image_padding
+        else:
+            data["cx"] = cam.cx 
+            data["cy"] = cam.cy
+            data["w"] = cam.width
+            data["h"] = cam.height
 
         bbox = CaptureFolder.camera_bbox(keyframes)
         print(bbox)
@@ -68,18 +78,21 @@ class InstantNGPConvertor(ConvertorInterface):
             json.dump(data, f, indent=2)
         logger.info("Successfuly wrote the data to {}".format(output_file_path))
 
-
     def _convert_keyframe(self, keyframe: Keyframe, folder: CaptureFolder) -> dict:
         """ Converts Polycam keyframe into a dictionary to be serialized as json """
         frame = {}
         # add the image
-        sub_path = CaptureArtifact.CORRECTED_IMAGES.value if keyframe.is_optimized() else CaptureArtifact.IMAGES.value
-        frame["file_path"] = "./{}/{}.jpg".format(sub_path, keyframe.timestamp)
-        full_path = os.path.join(folder.root, sub_path, "{}.jpg".format(keyframe.timestamp))
-        print("Opening image with file path " + full_path)
-        im = Image.open(full_path)
-        
-
+        if folder.has_optimized_poses():
+            # For the corrected images we apply an image crop to remove the black strip around the boundary that is a result of the undistortion process
+            # Since this may not be handled by nerf software
+            full_path = os.path.join(folder.root, CaptureArtifact.CORRECTED_IMAGES.value, "{}.jpg".format(keyframe.timestamp))
+            full_path_crop = os.path.join(folder.root, CaptureArtifact.CORRECTED_IMAGES.value, "{}_crop.jpg".format(keyframe.timestamp))
+            im = Image.open(full_path)
+            im = im.crop((self.corrected_image_padding, self.corrected_image_padding, keyframe.camera.width - 2 * self.corrected_image_padding, keyframe.camera.height - 2 * self.corrected_image_padding))
+            im.save(full_path_crop)
+            frame["file_path"] = "./{}/{}_crop.jpg".format(CaptureArtifact.CORRECTED_IMAGES.value, keyframe.timestamp)
+        else:
+            frame["file_path"] = "./{}/{}.jpg".format(CaptureArtifact.IMAGES.value, keyframe.timestamp)
         if keyframe.camera.blur_score:
             frame["sharpness"] = keyframe.camera.blur_score
         frame["transform_matrix"] = keyframe.camera.transform_rows
