@@ -8,6 +8,7 @@ Copyright © 2022 Polycam Inc. All rights reserved.
 import os
 import json
 import numpy as np
+from PIL import Image
 from polyform.utils.logging import logger
 from polyform.core.capture_folder import *
 from polyform.convertors.convertor_interface import ConvertorInterface
@@ -58,7 +59,7 @@ class InstantNGPConvertor(ConvertorInterface):
         ## add the frames
         frames = []
         for keyframe in keyframes:
-            frames.append(self._convert_keyframe(keyframe))
+            frames.append(self._convert_keyframe(keyframe, folder))
         data["frames"] = frames
 
         # Write the output file to json
@@ -68,12 +69,17 @@ class InstantNGPConvertor(ConvertorInterface):
         logger.info("Successfuly wrote the data to {}".format(output_file_path))
 
 
-    def _convert_keyframe(self, keyframe: Keyframe) -> dict:
+    def _convert_keyframe(self, keyframe: Keyframe, folder: CaptureFolder) -> dict:
         """ Converts Polycam keyframe into a dictionary to be serialized as json """
         frame = {}
         # add the image
         sub_path = CaptureArtifact.CORRECTED_IMAGES.value if keyframe.is_optimized() else CaptureArtifact.IMAGES.value
         frame["file_path"] = "./{}/{}.jpg".format(sub_path, keyframe.timestamp)
+        full_path = os.path.join(folder.root, sub_path, "{}.jpg".format(keyframe.timestamp))
+        print("Opening image with file path " + full_path)
+        im = Image.open(full_path)
+        
+
         if keyframe.camera.blur_score:
             frame["sharpness"] = keyframe.camera.blur_score
         frame["transform_matrix"] = keyframe.camera.transform_rows
