@@ -36,11 +36,11 @@ class CaptureArtifact(Enum):
 
 
 class Camera:
-    def __init__(self, j: dict, z_up: bool = False):
+    def __init__(self, j: dict, rotate: bool = False):
         """ Initializes a Camera object from the Polycam camera json format 
         Args:
             j: json representation of a camera object
-            z_up: will flip data so that z_axis points up instead of y_axis
+            rotate: rotates transform data to use the instant-ngp/nerftsudio convention (default)
         """
         self.fx = j["fx"]
         self.fy = j["fy"]
@@ -49,18 +49,18 @@ class Camera:
         self.width = j["width"]
         self.height = j["height"]
         self.blur_score = j["blur_score"]
-        if z_up:
+        if rotate:
             self.transform_rows = [
-                [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
                 [j["t_20"], j["t_21"], j["t_22"], j["t_23"]],
-                [-j["t_10"], -j["t_11"], -j["t_12"], -j["t_13"]],
-                [0.0,0.0,0.0,1.0]]
+                [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
+                [j["t_10"], j["t_11"], j["t_12"], j["t_13"]],
+                [0.0,0.0,0.0,1.0]]   
         else:
             self.transform_rows = [
-                    [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
-                    [j["t_10"], j["t_11"], j["t_12"], j["t_13"]],
-                    [j["t_20"], j["t_21"], j["t_22"], j["t_23"]],
-                    [0.0,0.0,0.0,1.0]]
+                [j["t_00"], j["t_01"], j["t_02"], j["t_03"]],
+                [j["t_10"], j["t_11"], j["t_12"], j["t_13"]],
+                [j["t_20"], j["t_21"], j["t_22"], j["t_23"]],
+                [0.0,0.0,0.0,1.0]]
         self.transform = np.asarray(self.transform_rows, dtype=np.float32)
 
 class Keyframe:
@@ -68,7 +68,7 @@ class Keyframe:
     A Keyframe includes the camera information (extrinsics and intrinsics) as well as the 
     path to the associated data on disk (images, depth map, confidence)
     """
-    def __init__(self, folder: str, timestamp: int):
+    def __init__(self, folder: str, timestamp: int, rotate: bool):
         self.folder = folder
         self.timestamp = timestamp
         self.image_path = os.path.join(
@@ -81,7 +81,7 @@ class Keyframe:
             folder, "{}/{}.json".format(CaptureArtifact.CORRECTED_CAMERAS.value, timestamp))
         self.depth_path = os.path.join(
             folder, "{}/{}.png".format(CaptureArtifact.DEPTH_MAPS.value, timestamp))
-        self.camera = Camera(self.get_best_camera_json())
+        self.camera = Camera(self.get_best_camera_json(), rotate)
 
     def is_valid(self) -> bool:
         if not os.path.isfile(self.camera_path):
@@ -105,8 +105,7 @@ class Keyframe:
             return CaptureFolder.load_json(self.corrected_camera_path)
         else:
             return CaptureFolder.load_json(self.camera_path)
-
-
+            
     def __str__(self):
         return "keyframe:{}".format(self.timestamp)
 
@@ -154,13 +153,13 @@ class CaptureFolder:
             return timestamps
         return [int(path.replace(".json", "")) for path in sorted(os.listdir(folder_path)) if path.endswith("json")]
 
-    def get_keyframes(self) -> List[Keyframe]:
+    def get_keyframes(self, rotate: bool = False) -> List[Keyframe]:
         """
         Returns all valid keyframes associated with this dataset
         """
         keyframes = []
         for ts in self.get_keyframe_timestamps():
-            keyframe = Keyframe(self.root, ts)
+            keyframe = Keyframe(self.root, ts, rotate)
             if keyframe.is_valid():
                 keyframes.append(keyframe)
         return keyframes
