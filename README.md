@@ -48,6 +48,8 @@ Given that the pose optimization can take some time to run on very lage scenes, 
 python3 -m polyform.convert <path-to-data-folder> --format ingp
 ```
 
+Note: you may need to tweak the `scale` parameter in the transforms.json file to get the best results. 
+
 ### Adding additional convertors:
 
 If you would like to add an additional export format you can do so by consulting Polycam's data specification below, and using `polyform/convertors/instant_ngp.py` as an example.

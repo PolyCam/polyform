@@ -60,8 +60,8 @@ class InstantNGPConvertor(ConvertorInterface):
         print(bbox)
         ## Use camera bbox to compute scale, and offset 
         ## See https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md#scaling-existing-datasets
-        max_size = np.max(bbox.size()) * 0.6
-        data["scale"] = float(1.0 / max_size) # this scale will 
+        max_size = np.max(bbox.size()) * 0.75
+        data["scale"] = float(1.0 / max_size)
         offset = -bbox.center() / max_size
         data["offset"] = [float(offset[0]) + 0.5, float(offset[1]) + 0.5, float(offset[2]) + 0.5]
         data["aabb_scale"] = 2
