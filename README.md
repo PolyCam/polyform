@@ -83,7 +83,7 @@ The `thumbnail.jpg` and `polycam.mp4` are visual metadata which are included for
 
 ### images
 
-This directory contains the original images, where the name of the file is the timestamp, and will match the filenames for the other corresponding files (camera, depth map etc). Note that these images have some distortion, so you will probably want to use the `corrected_images` instead.
+This directory contains the original images, where the name of the file is the timestamp in microseconds, and will match the filenames for the other corresponding files (camera, depth map etc). Note that these images have some distortion, so you will probably want to use the `corrected_images` instead.
 
 ### corrected_images
 
