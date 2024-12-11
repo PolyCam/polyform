@@ -124,4 +124,4 @@ This folder includes the pixel-wise confidence maps associated with the depth ma
 
  ## Working at Polycam
 
- If you are an engineer or researcher working in the field of 3D computer vision and want to work on a product that's shipping 3D reconstruction to millions of users, email us at careers@polycam.ai.
+ If you are an engineer or researcher working in the field of 3D computer vision and want to work on a product that's shipping 3D reconstruction to millions of users, please visit: https://poly.cam/careers.
