@@ -77,7 +77,7 @@ we will describe each of these artifacts below.
 
 ### raw.glb, thumbnail, video, mesh_info
 
-The `raw.glb` file contains the reconstructed mesh in binary gLTF form. This is put into an axis-aligned coordinate system, and if you wish to put it into the same coorindate system as the raw data you will need to apply the inverse of the `alignmentTransform` contained in the `mesh_info.json` (stored in column-major format).
+The `raw.glb` file contains the reconstructed mesh in binary gLTF form. This is put into an axis-aligned coordinate system, and if you wish to put it into the same coorindate system as the raw data you will need to apply the inverse of the `alignmentTransform` contained in the `mesh_info.json` (stored in column-major format). Update: for more recent captures this is in the related .gltf format.
 
 The `thumbnail.jpg` and `polycam.mp4` are visual metadata which are included for convenience, and the `mesh_info.json` contains some metadata about the raw.glb mesh such as the number of faces and vertices.
 
