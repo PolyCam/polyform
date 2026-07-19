@@ -50,6 +50,20 @@ python3 -m polyform.convert <path-to-data-folder> --format ingp
 
 Note: you may need to tweak the `scale` parameter in the transforms.json file to get the best results. 
 
+### COLMAP
+
+[COLMAP](https://colmap.github.io/) is a widely-used Structure-from-Motion / Multi-View Stereo pipeline, and its text-based sparse model format (`cameras.txt` / `images.txt` / `points3D.txt`) is also the expected input format for many downstream tools, notably the reference [3D Gaussian Splatting](https://github.com/graphdeco-inria/gaussian-splatting) implementation. You can convert from Polycam's data format to a COLMAP text model by running:
+
+```
+python3 -m polyform.convert <path-to-data-folder> --format colmap
+```
+
+This writes `cameras.txt`, `images.txt` and `points3D.txt` into a `colmap_text` folder at the root of the data folder. Since Polycam's camera poses are already globally optimized (see note above), this lets you skip COLMAP's own (often slow, and occasionally failure-prone on textureless indoor scenes) feature-matching + SfM step entirely, and go straight to tools that consume a COLMAP model.
+
+A couple of things to know:
+- `points3D.txt` is written empty, since Polycam's raw export doesn't include COLMAP-style per-image 2D/3D keypoint correspondences. This is fine for tools that only need camera poses (e.g. 3D Gaussian Splatting can initialize from a random point cloud when `points3D.txt` is empty), but means COLMAP itself won't have a sparse point cloud to display until you triangulate one.
+- By default every image gets its own COLMAP camera entry, since Polycam's per-frame intrinsics vary by a pixel or two frame to frame (the same caveat noted for the instant-ngp convertor above). Pass `--shared_camera` if you need a single shared camera instead (e.g. for tools that assume one camera for the whole capture).
+
 ### Adding additional convertors:
 
 If you would like to add an additional export format you can do so by consulting Polycam's data specification below, and using `polyform/convertors/instant_ngp.py` as an example.
